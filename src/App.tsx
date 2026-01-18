@@ -1,34 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from "react"
+import { Checkbox } from "./components/ui/checkbox"
+import { Label } from "./components/ui/label"
+import { supabase } from "./lib/supabase"
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const checkConnection = async () => {
+      const { data, error } = await supabase.auth.getSession();
 
+      if(error){
+        console.log('Connection failed sigbin:', error.message);
+      } else {
+        console.log('Success tanginamo:', data);
+      }
+    };
+
+    checkConnection();
+  }, [])
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-3">
+        <Checkbox id="terms" />
+        <Label htmlFor="terms">Accept terms and conditions</Label>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="flex items-start gap-3">
+        <Checkbox id="terms-2" defaultChecked />
+        <div className="grid gap-2">
+          <Label htmlFor="terms-2">Accept terms and conditions</Label>
+          <p className="text-muted-foreground text-sm">
+            By clicking this checkbox, you agree to the terms and conditions.
+          </p>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <div className="flex items-start gap-3">
+        <Checkbox id="toggle" disabled />
+        <Label htmlFor="toggle">Enable notifications</Label>
+      </div>
+      <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
+        <Checkbox
+          id="toggle-2"
+          defaultChecked
+          className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+        />
+        <div className="grid gap-1.5 font-normal">
+          <p className="text-sm leading-none font-medium">
+            Enable notifications
+          </p>
+          <p className="text-muted-foreground text-sm">
+            You can enable or disable notifications at any time.
+          </p>
+        </div>
+      </Label>
+    </div>
   )
 }
 
