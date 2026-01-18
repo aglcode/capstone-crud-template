@@ -1,11 +1,14 @@
 import React from 'react'
 import Icon from '../components/ui/Icon';
 import Navbar from '../components/layout/Navbar';
-import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
+import AlertDemo from '../components/layout/Alert';import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <Navbar />
+      <div className="fixed bottom-4 left-4 z-40 max-w-sm">
+        <AlertDemo />
+      </div>
 
       <main>
         {/* Hero Section */}
