@@ -31,7 +31,7 @@
     --radius: 0.5rem
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 201 64% 4%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -64,6 +64,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    @apply bg-stone-950;
   }
 }
