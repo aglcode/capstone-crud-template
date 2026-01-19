@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -20,7 +22,10 @@ const Navbar = () => {
         <nav className="hidden md:flex items-center gap-4">
           <a className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors" href="#">Documentation</a>
           <a className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors" href="#pricing">Pricing</a>
-          <button className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+          <button
+            className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            onClick={() => navigate('/login')}
+          >
             Sign In
           </button>
         </nav>
@@ -41,7 +46,13 @@ const Navbar = () => {
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
             <a className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors" href="#" onClick={() => setIsOpen(false)}>Documentation</a>
             <a className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors" href="#pricing" onClick={() => setIsOpen(false)}>Pricing</a>
-            <button className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full" onClick={() => setIsOpen(false)}>
+            <button
+              className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full"
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/login');
+              }}
+            >
               Sign In
             </button>
           </nav>
