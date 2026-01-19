@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react"
+import { Routes, Route } from "react-router-dom"
 import { Moon, Sun } from "lucide-react"
 import LandingPage from "./pages/LandingPage"
-
+import LoginPage from "./pages/LoginPage";
+import Registration from "./pages/Registration";
 
 function App() {
   const [isDark, setIsDark] = useState(false);
@@ -22,7 +24,12 @@ function App() {
       >
         {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
       </button>
-      <LandingPage />
+
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<Registration />} />
+      </Routes>
     </div>
   );
 }

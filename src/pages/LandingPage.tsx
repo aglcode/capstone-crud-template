@@ -2,7 +2,8 @@ import React from 'react'
 import Icon from '../components/ui/Icon';
 import Navbar from '../components/layout/Navbar';
 import AlertDemo from '../components/layout/Alert';import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
-const LandingPage = () => {
+
+const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <Navbar />
