@@ -1,10 +1,11 @@
+import type React from 'react';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter} from '@tanstack/react-router';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -24,7 +25,7 @@ const Navbar: React.FC = () => {
           <a className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors" href="#pricing">Pricing</a>
           <button
             className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            onClick={() => navigate('/login')}
+            onClick={() => router.navigate({ to: '/login' })}
           >
             Sign In
           </button>
@@ -50,7 +51,7 @@ const Navbar: React.FC = () => {
               className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring w-full"
               onClick={() => {
                 setIsOpen(false);
-                navigate('/login');
+                router.navigate({ to: '/login' });
               }}
             >
               Sign In
