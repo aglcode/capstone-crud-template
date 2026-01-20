@@ -1,12 +1,11 @@
 import React from 'react'
 import Icon from '../components/ui/Icon';
-import Navbar from '../components/layout/Navbar';
-import AlertDemo from '../components/layout/Alert';import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
+import AlertDemo from '../components/layout/Alert';
+import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
 
 const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
-      <Navbar />
       <div className="fixed bottom-4 left-4 z-40 max-w-sm">
         <AlertDemo />
       </div>
@@ -23,7 +22,7 @@ const LandingPage: React.FC = () => {
               Build your next project faster
             </h1>
             <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-              An open source CRUD dashboard built using the new components. 
+              An open source CRUD dashboard built using the new components.
               Accessible, customizable, and designed for the modern web.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -119,7 +118,7 @@ const LandingPage: React.FC = () => {
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((feature, fIdx) => (
                     <li key={fIdx} className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <Icon name="check" className="text-primary text-lg" />
+                      <Icon name="Check" className="text-primary text-lg" />
                       {feature}
                     </li>
                   ))}

@@ -1,8 +1,9 @@
+import type { icons } from 'lucide-react';
 
 export interface Feature {
   title: string;
   description: string;
-  icon: string;
+  icon: keyof typeof icons;
 }
 
 export interface Testimonial {
