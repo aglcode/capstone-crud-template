@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
     RouterProvider,
     createRootRoute,
@@ -8,21 +8,42 @@ import {
 import { Outlet } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import { Moon, Sun } from "lucide-react"
 
-import LandingPage from '../pages/LandingPage'
-import LoginPage from '../pages/LoginPage'
-import Registration from '../pages/Registration'
+import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import Registration from './pages/Registration'
 import Navbar from '@/components/layout/Navbar'
 
-const rootRoute = createRootRoute({
-    component: () => (
+function RootComponent() {
+    const [isDark, setIsDark] = useState(false);
+
+    useEffect(() => {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [isDark]);
+
+    return (
         <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
             <Navbar />
             <div className='flex-1'>
                 <Outlet />
             </div>
+            <button
+                onClick={() => setIsDark(!isDark)}
+                className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
+            >
+                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
         </div>
-    ),
+    );
+}
+
+const rootRoute = createRootRoute({
+    component: RootComponent,
 })
 
 const indexRoute = createRoute({
