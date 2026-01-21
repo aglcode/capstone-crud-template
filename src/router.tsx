@@ -4,9 +4,10 @@ import {
     createRootRoute,
     createRoute,
     createRouter,
+    redirect,
+    Outlet,
+    Link,
 } from "@tanstack/react-router"
-import { Outlet } from '@tanstack/react-router'
-import { Link } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { Moon, Sun } from "lucide-react"
 
@@ -14,8 +15,24 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import Registration from './pages/Registration'
 import Navbar from '@/components/layout/Navbar'
+import AdminDashboard from './features/admin/components/AdminDashboard'
+import Sidebar from './components/layout/Sidebar'
 
+const isAuthenticated = () => {
+    return !!localStorage.getItem('authToken');
+}
+
+// Root component without Navbar
 function RootComponent() {
+    return (
+        <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
+            <Outlet />
+        </div>
+    );
+}
+
+// Public layout with Navbar and theme toggle
+function PublicLayout() {
     const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
@@ -27,7 +44,7 @@ function RootComponent() {
     }, [isDark]);
 
     return (
-        <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
+        <>
             <Navbar />
             <div className='flex-1'>
                 <Outlet />
@@ -38,6 +55,32 @@ function RootComponent() {
             >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+        </>
+    );
+}
+
+// Admin Dashboard Layout
+function DashboardLayout() {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    return (
+        <div className="flex h-screen overflow-hidden">
+            <Sidebar 
+                isOpen={isSidebarOpen} 
+                isCollapsed={isCollapsed} 
+                toggleCollapse={() => setIsCollapsed(!isCollapsed)} 
+            />
+            {/* Overlay for mobile */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 z-40 bg-black/50 md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+            <div className="flex-1 overflow-hidden">
+                <Outlet />
+            </div>
         </div>
     );
 }
@@ -46,23 +89,81 @@ const rootRoute = createRootRoute({
     component: RootComponent,
 })
 
-const indexRoute = createRoute({
+// Public routes layout
+const publicLayoutRoute = createRoute({
     getParentRoute: () => rootRoute,
+    id: 'public',
+    component: PublicLayout,
+})
+
+const indexRoute = createRoute({
+    getParentRoute: () => publicLayoutRoute,
     path: "/",
     component: LandingPage,
 })
 
-
 const loginRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => publicLayoutRoute,
     path: "/login",
     component: LoginPage,
 })
 
 const registerRoute = createRoute({
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => publicLayoutRoute,
     path: "/register",
     component: Registration,
+})
+
+// Dashboard layout route (temporarily unprotected)
+const dashboardLayoutRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/dashboard",
+    beforeLoad: async () => {
+        if (!isAuthenticated()) {
+            throw redirect({
+                to: '/login',
+                search: {
+                    redirect: '/dashboard',
+                },
+            })
+        }
+    },
+    component: DashboardLayout,
+})
+
+// Dashboard overview route
+const dashboardIndexRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/",
+    component: function DashboardPage() {
+        const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+        return <AdminDashboard onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />;
+    },
+})
+
+// Additional dashboard routes (for future use)
+const usersRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/users",
+    component: () => <div className="p-8">Users Page (Coming Soon)</div>,
+})
+
+const productsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/products",
+    component: () => <div className="p-8">Products Page (Coming Soon)</div>,
+})
+
+const analyticsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/analytics",
+    component: () => <div className="p-8">Analytics Page (Coming Soon)</div>,
+})
+
+const reportsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/reports",
+    component: () => <div className="p-8">Reports Page (Coming Soon)</div>,
 })
 
 const notFoundRoute = createRoute({
@@ -84,9 +185,18 @@ const notFoundRoute = createRoute({
 })
 
 const routeTree = rootRoute.addChildren([
-    indexRoute,
-    loginRoute,
-    registerRoute,
+    publicLayoutRoute.addChildren([
+        indexRoute,
+        loginRoute,
+        registerRoute,
+    ]),
+    dashboardLayoutRoute.addChildren([
+        dashboardIndexRoute,
+        usersRoute,
+        productsRoute,
+        analyticsRoute,
+        reportsRoute,
+    ]),
     notFoundRoute,
 ])
 
@@ -102,8 +212,7 @@ export function AppRouter() {
     return (
         <>
             <RouterProvider router={router} />
-            {import.meta.env.DEV ? <TanStackRouterDevtools router={router} /> : null}
+            {/* {import.meta.env.DEV ? <TanStackRouterDevtools router={router} /> : null} */}
         </>
     )
-
 }

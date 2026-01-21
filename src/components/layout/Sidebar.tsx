@@ -1,0 +1,167 @@
+import React from 'react'
+import { Link } from "@tanstack/react-router";
+import { 
+    LayoutDashboard, 
+    Users, 
+    Package, 
+    BarChart, 
+    FileText, 
+    Settings, 
+    HelpCircle, 
+    Bot,
+    Layers,
+    PanelLeft
+  } from "lucide-react";
+  import { Button } from "../../components/ui/button"
+  import { Separator } from "../../components/ui/separator";
+  import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar";
+  import { cn } from "../../lib/utils";
+  
+  
+  interface SidebarProps {
+    isOpen: boolean;
+    isCollapsed: boolean;
+    toggleCollapse: () => void;
+  }
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, toggleCollapse }) => {
+    return (
+        <aside
+          className={cn(
+            "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-card transition-[width,transform] duration-300 ease-in-out md:relative",
+            isOpen ? "translate-x-0 shadow-xl" : "-translate-x-full md:translate-x-0 md:shadow-none",
+            isCollapsed ? "w-64 md:w-[70px]" : "w-64"
+          )}
+        >
+          <div className={cn("flex h-16 items-center border-b border-border", isCollapsed ? "justify-center" : "justify-between px-6")}>
+            <div className={cn("flex items-center gap-2 overflow-hidden", isCollapsed ? "hidden" : "flex")}>
+              <div className="flex items-center justify-center rounded-lg bg-primary text-primary-foreground h-6 w-6 shrink-0">
+                <Layers size={16} />
+              </div>
+              <h1 className="text-lg font-bold tracking-tight whitespace-nowrap">
+                Bayabas Dev
+              </h1>
+            </div>
+    
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleCollapse}
+              className="hidden md:flex h-8 w-8 text-muted-foreground hover:text-foreground"
+              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              <PanelLeft size={18} />
+            </Button>
+          </div>
+    
+          <div className="flex flex-1 flex-col gap-2 p-4 overflow-y-auto overflow-x-hidden">
+            <nav className="flex flex-col gap-1">
+              <Button
+                variant="secondary"
+                className={cn("w-full justify-start", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <Link to="/dashboard" title={isCollapsed ? "Dashboard" : ""}>
+                  <LayoutDashboard size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Dashboard</span>
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <Link to="/dashboard/users" title={isCollapsed ? "Users" : ""}>
+                  <Users size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Users</span>
+                </Link>
+              </Button>
+               <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <Link to="/dashboard/products" title={isCollapsed ? "Products" : ""}>
+                  <Package size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Products</span>
+                </Link>
+              </Button>
+               <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <Link to="/dashboard/analytics" title={isCollapsed ? "Analytics" : ""}>
+                  <BarChart size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Analytics</span>
+                </Link>
+              </Button>
+               <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <Link to="/dashboard/reports" title={isCollapsed ? "Reports" : ""}>
+                  <FileText size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Reports</span>
+                </Link>
+              </Button>
+            </nav>
+    
+            <div className="my-2">
+                <Separator />
+            </div>
+    
+            <nav className="mt-auto flex flex-col gap-1">
+              <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <a href="#" title={isCollapsed ? "Help Center" : ""}>
+                  <HelpCircle size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>Help Center</span>
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
+                asChild
+              >
+                <a href="#" title={isCollapsed ? "AI Assistant" : ""}>
+                  <Bot size={18} className="shrink-0" />
+                  <span className={isCollapsed ? "hidden" : "block truncate"}>AI Assistant</span>
+                </a>
+              </Button>
+            </nav>
+          </div>
+    
+          <div className="p-4 border-t border-border">
+            <div className={cn("flex items-center rounded-md transition-colors hover:bg-accent group", isCollapsed ? "justify-center p-0" : "px-2 py-2 gap-3")}>
+              <Avatar className="h-8 w-8 border border-border">
+                <AvatarImage src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1XV9LbQz7NaXltmIL7-9B0ZOjXbXeEffD5WstMrNvWiNsTct3iY3c_c8dBZXAHzuxiPo5czNcSWU9SW32UROKarGO8sXGWx68h1W0pm0xESjGjiUJ1nZ4SsBf0jAMZbQ_OvVIPDn4qNlVxBkXM6Uv6mgp7fDCyMIQeARzVTHvgrgRrExzYFNikVo_8PR3uqZTr7DsOKF8ZNiKz8wiBNyVsEthT1wKcpdcJvxS8GVOpD-9gSdauTTdAO34g5Z7jwbDWCk97UTLNcat" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              
+              {!isCollapsed && (
+                <>
+                  <div className="flex flex-col flex-1 overflow-hidden ml-1">
+                    <span className="text-sm font-medium text-foreground truncate">
+                      Jane Doe
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      jane@acme.com
+                    </span>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                    <Settings size={18} />
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </aside>
+      );
+    };
+
+export default Sidebar
