@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import Navbar from '../components/layout/Navbar';
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
-      <Navbar />
+  
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-[400px]">
           <CardHeader className="pb-4">
