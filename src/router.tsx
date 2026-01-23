@@ -12,8 +12,8 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { Moon, Sun } from "lucide-react"
 
 import LandingPage from './pages/LandingPage'
-import LoginPage from './pages/LoginPage'
-import Registration from './pages/Registration'
+import LoginPage from './features/auth/components/LoginPage'
+import Registration from './features/auth/components/Registration'
 import Navbar from '@/components/layout/Navbar'
 import AdminDashboard from './features/admin/components/AdminDashboard'
 import Sidebar from './components/layout/Sidebar'
@@ -66,14 +66,14 @@ function DashboardLayout() {
 
     return (
         <div className="flex h-screen overflow-hidden">
-            <Sidebar 
-                isOpen={isSidebarOpen} 
-                isCollapsed={isCollapsed} 
-                toggleCollapse={() => setIsCollapsed(!isCollapsed)} 
+            <Sidebar
+                isOpen={isSidebarOpen}
+                isCollapsed={isCollapsed}
+                toggleCollapse={() => setIsCollapsed(!isCollapsed)}
             />
             {/* Overlay for mobile */}
             {isSidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-40 bg-black/50 md:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />

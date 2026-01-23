@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from '@tanstack/react-router';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,41 +15,67 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const Registration = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: ''
-      });
-    
-      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setFormData(prev => ({ ...prev, [id]: value }));
-      };
-    
-      const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Form submitted:', formData);
-        // Add logic here to interface with Google GenAI if needed
-      };
-    
-      return (
-        <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
-          <main className="flex-1 flex items-center justify-center px-4 py-8">
-            <Card className="w-full max-w-[400px]">
-              <CardHeader>
-                <CardTitle className="text-2xl text-center">Create an account</CardTitle>
-                <CardDescription className="text-center">
-                  Enter your email below to create your account
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6">
-                <form onSubmit={handleSubmit}>
-                  <div className="grid gap-4">
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          name: formData.name
+        }
+      }
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    navigate({ to: '/login' });
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-4 py-8">
+        <Card className="w-full max-w-[400px]">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Create an account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your email below to create your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            {error && (
+              <div className="text-red-500 text-sm text-center">{error}</div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input 
+                  <Input
                     id="name"
-                    placeholder="John Doe" 
+                    placeholder="John Doe"
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
@@ -56,12 +83,12 @@ const Registration = () => {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input 
+                  <Input
                     id="email"
-                    placeholder="m@example.com" 
-                    type="email" 
-                    autoCapitalize="none" 
-                    autoComplete="email" 
+                    placeholder="m@example.com"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
                     autoCorrect="off"
                     value={formData.email}
                     onChange={handleChange}
@@ -69,20 +96,20 @@ const Registration = () => {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input 
-                    id="password" 
-                    type="password" 
+                  <Input
+                    id="password"
+                    type="password"
                     autoComplete="new-password"
                     value={formData.password}
                     onChange={handleChange}
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  Create account
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Creating account...' : 'Create account'}
                 </Button>
               </div>
             </form>
-    
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-border"></span>
@@ -93,9 +120,9 @@ const Registration = () => {
                 </span>
               </div>
             </div>
-    
+
             <div className="grid grid-cols-2 gap-4">
-              <Button 
+              <Button
                 type="button"
                 variant="outline"
               >
@@ -104,7 +131,7 @@ const Registration = () => {
                 </svg>
                 GitHub
               </Button>
-              <Button 
+              <Button
                 type="button"
                 variant="outline"
               >
@@ -114,7 +141,7 @@ const Registration = () => {
                 Google
               </Button>
             </div>
-    
+
             <div className="space-y-2">
               <div className="text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
