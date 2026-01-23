@@ -1,6 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import { supabase } from '@/lib/supabase';
+import { useNavigate } from '@tanstack/react-router';
 
 
 import { Button } from "@/components/ui/button";
@@ -18,14 +20,43 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt with:', { email, password });
+    setLoading(true);
+    setError(null);
+    // Sign in
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      setLoading(false);
+      setError(error.message);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', data.user.id)
+      .single();
+    setLoading(false);
+
+    // Store auth token for route guard
+    localStorage.setItem('authToken', 'true');
+    localStorage.setItem('userRole', profile?.role || 'user');
+
+    // Both roles go to dashboard - the dashboard can show different content based on role
+    navigate({ to: '/dashboard' });
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col">
-  
+
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-[400px]">
           <CardHeader className="pb-4">
@@ -35,6 +66,9 @@ const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
+            {error && (
+              <div className="text-red-500 text-sm text-center mb-4">{error}</div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4">
                 <div className="grid gap-2">
@@ -71,8 +105,8 @@ const LoginPage = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  Sign In
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </div>
             </form>
