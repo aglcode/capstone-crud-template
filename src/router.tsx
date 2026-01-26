@@ -16,6 +16,7 @@ import LoginPage from './features/auth/components/LoginPage'
 import Registration from './features/auth/components/Registration'
 import Navbar from '@/components/layout/Navbar'
 import AdminDashboard from './features/admin/components/AdminDashboard'
+import UsersPage from './features/admin/components/UsersPage'
 import Sidebar from './components/layout/Sidebar'
 
 const isAuthenticated = () => {
@@ -145,7 +146,7 @@ const dashboardIndexRoute = createRoute({
 const usersRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/users",
-    component: () => <div className="p-8">Users Page (Coming Soon)</div>,
+    component: UsersPage,
 })
 
 const productsRoute = createRoute({
