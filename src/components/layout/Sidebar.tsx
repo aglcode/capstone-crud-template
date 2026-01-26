@@ -56,56 +56,93 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, toggleCollapse }
     
           <div className="flex flex-1 flex-col gap-2 p-4 overflow-y-auto overflow-x-hidden">
             <nav className="flex flex-col gap-1">
-              <Button
-                variant="secondary"
-                className={cn("w-full justify-start", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
-                asChild
+              <Link 
+                to="/dashboard"
+                activeOptions={{ exact: true }}
               >
-                <Link to="/dashboard" title={isCollapsed ? "Dashboard" : ""}>
-                  <LayoutDashboard size={18} className="shrink-0" />
-                  <span className={isCollapsed ? "hidden" : "block truncate"}>Dashboard</span>
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
-                asChild
-              >
-                <Link to="/dashboard/users" title={isCollapsed ? "Users" : ""}>
-                  <Users size={18} className="shrink-0" />
-                  <span className={isCollapsed ? "hidden" : "block truncate"}>Users</span>
-                </Link>
-              </Button>
-               <Button
-                variant="ghost"
-                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
-                asChild
-              >
-                <Link to="/dashboard/products" title={isCollapsed ? "Products" : ""}>
-                  <Package size={18} className="shrink-0" />
-                  <span className={isCollapsed ? "hidden" : "block truncate"}>Products</span>
-                </Link>
-              </Button>
-               <Button
-                variant="ghost"
-                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
-                asChild
-              >
-                <Link to="/dashboard/analytics" title={isCollapsed ? "Analytics" : ""}>
-                  <BarChart size={18} className="shrink-0" />
-                  <span className={isCollapsed ? "hidden" : "block truncate"}>Analytics</span>
-                </Link>
-              </Button>
-               <Button
-                variant="ghost"
-                className={cn("w-full justify-start text-muted-foreground", isCollapsed ? "justify-center px-0" : "px-3 gap-3")}
-                asChild
-              >
-                <Link to="/dashboard/reports" title={isCollapsed ? "Reports" : ""}>
-                  <FileText size={18} className="shrink-0" />
-                  <span className={isCollapsed ? "hidden" : "block truncate"}>Reports</span>
-                </Link>
-              </Button>
+                {({ isActive }) => (
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isCollapsed ? "justify-center px-0" : "px-3 gap-3",
+                      !isActive && "text-muted-foreground"
+                    )}
+                    title={isCollapsed ? "Dashboard" : ""}
+                  >
+                    <LayoutDashboard size={18} className="shrink-0" />
+                    <span className={isCollapsed ? "hidden" : "block truncate"}>Dashboard</span>
+                  </Button>
+                )}
+              </Link>
+
+              <Link to="/dashboard/users">
+                {({ isActive }) => (
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isCollapsed ? "justify-center px-0" : "px-3 gap-3",
+                      !isActive && "text-muted-foreground"
+                    )}
+                    title={isCollapsed ? "Users" : ""}
+                  >
+                    <Users size={18} className="shrink-0" />
+                    <span className={isCollapsed ? "hidden" : "block truncate"}>Users</span>
+                  </Button>
+                )}
+              </Link>
+
+              <Link to="/dashboard/products">
+                {({ isActive }) => (
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isCollapsed ? "justify-center px-0" : "px-3 gap-3",
+                      !isActive && "text-muted-foreground"
+                    )}
+                    title={isCollapsed ? "Products" : ""}
+                  >
+                    <Package size={18} className="shrink-0" />
+                    <span className={isCollapsed ? "hidden" : "block truncate"}>Products</span>
+                  </Button>
+                )}
+              </Link>
+
+              <Link to="/dashboard/analytics">
+                {({ isActive }) => (
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isCollapsed ? "justify-center px-0" : "px-3 gap-3",
+                      !isActive && "text-muted-foreground"
+                    )}
+                    title={isCollapsed ? "Analytics" : ""}
+                  >
+                    <BarChart size={18} className="shrink-0" />
+                    <span className={isCollapsed ? "hidden" : "block truncate"}>Analytics</span>
+                  </Button>
+                )}
+              </Link>
+
+              <Link to="/dashboard/reports">
+                {({ isActive }) => (
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isCollapsed ? "justify-center px-0" : "px-3 gap-3",
+                      !isActive && "text-muted-foreground"
+                    )}
+                    title={isCollapsed ? "Reports" : ""}
+                  >
+                    <FileText size={18} className="shrink-0" />
+                    <span className={isCollapsed ? "hidden" : "block truncate"}>Reports</span>
+                  </Button>
+                )}
+              </Link>
             </nav>
     
             <div className="my-2">
