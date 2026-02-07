@@ -39,3 +39,22 @@ export interface User {
   status: UserStatus;
   lastActive: string;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  model: string;
+  sku: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  image: string;
+}
+
+export type SortDirection = 'asc' | 'desc' | null;
+
+export interface SortConfig {
+  key: keyof Product;
+  direction: SortDirection;
+}

@@ -18,6 +18,8 @@ import Navbar from '@/components/layout/Navbar'
 import AdminDashboard from './features/admin/components/AdminDashboard'
 import UsersPage from './features/admin/components/UsersPage'
 import Sidebar from './components/layout/Sidebar'
+import Products from './features/admin/components/Products'
+import { PRODUCTS } from './features/constants/ConstantsProducts'
 
 const isAuthenticated = () => {
     return !!localStorage.getItem('authToken');
@@ -149,10 +151,15 @@ const usersRoute = createRoute({
     component: UsersPage,
 })
 
+// Wrapper component to provide data
+function ProductsPage() {
+    return <Products products={PRODUCTS} />;
+}
+
 const productsRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/products",
-    component: () => <div className="p-8">Products Page (Coming Soon)</div>,
+    component: ProductsPage,
 })
 
 const analyticsRoute = createRoute({
