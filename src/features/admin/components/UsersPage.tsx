@@ -12,8 +12,32 @@ import { Input } from "../../../components/ui/input";
 import { Badge } from "../../../components/ui/badge";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
-import { Plus, Filter, Sun, Moon, Eye, Pencil, Trash2 } from "lucide-react";
+import { Plus, Filter, Eye, Pencil, Trash2 } from "lucide-react";
 import { type User, type UserStatus } from '../../../types/types';
+import { motion, type Variants } from "framer-motion";
+import { Pagination } from "../../../components/layout/Pagination";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
+};
 
 const INITIAL_USERS: User[] = [
   {
@@ -81,7 +105,14 @@ const StatusBadge = ({ status }: { status: UserStatus }) => {
 export default function UsersPage() {
   const [users] = useState<User[]>(INITIAL_USERS);
   const [selectedUsers, setSelectedUsers] = useState<string[]>(['1']);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentUsers = users.slice(startIndex, endIndex);
+
 
   const toggleSelection = (userId: string) => {
     setSelectedUsers(prev =>
@@ -95,19 +126,11 @@ export default function UsersPage() {
     if (selectedUsers.length === users.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(users.map(u => u.id));
+      setSelectedUsers(currentUsers.map(u => u.id));
     }
   };
 
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.remove('dark');
-    } else {
-      html.classList.add('dark');
-    }
-    setIsDarkMode(!isDarkMode);
-  };
+
 
   return (
     <div className="flex-1 flex flex-col h-full bg-background transition-colors duration-300">
@@ -120,18 +143,21 @@ export default function UsersPage() {
               Manage your team members and their account permissions.
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
+
         </div>
       </header>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto px-8 pb-8 pt-6">
-        <div className="max-w-[1400px] mx-auto flex flex-col h-full space-y-4">
-          
+        <motion.div
+          className="max-w-[1400px] mx-auto flex flex-col h-full space-y-4"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+
           {/* Toolbar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="w-full sm:max-w-sm">
               <Input placeholder="Filter emails..." className="h-9" />
             </div>
@@ -145,16 +171,16 @@ export default function UsersPage() {
                 Add User
               </Button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Table */}
-          <div className="rounded-md border border-border bg-card">
+          <motion.div variants={itemVariants} className="rounded-md border border-border bg-card">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-[50px]">
-                    <Checkbox 
-                      checked={selectedUsers.length === users.length && users.length > 0}
+                    <Checkbox
+                      checked={selectedUsers.length === currentUsers.length && currentUsers.length > 0}
                       onCheckedChange={toggleAll}
                     />
                   </TableHead>
@@ -166,10 +192,10 @@ export default function UsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {currentUsers.map((user) => (
                   <TableRow key={user.id} data-state={selectedUsers.includes(user.id) ? "selected" : undefined}>
                     <TableCell>
-                      <Checkbox 
+                      <Checkbox
                         checked={selectedUsers.includes(user.id)}
                         onCheckedChange={() => toggleSelection(user.id)}
                       />
@@ -200,7 +226,7 @@ export default function UsersPage() {
                       {user.lastActive}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <motion.div variants={itemVariants} className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-green-600 dark:hover:text-green-400">
                           <Eye className="h-4 w-4" />
                           <span className="sr-only">View</span>
@@ -213,30 +239,31 @@ export default function UsersPage() {
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
                         </Button>
-                      </div>
+                      </motion.div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </motion.div>
 
           {/* Footer / Pagination */}
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {selectedUsers.length} of {users.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
-
-        </div>
+          <motion.div variants={itemVariants}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              selectedCount={selectedUsers.length}
+              totalCount={users.length}
+              onPageChange={setCurrentPage}
+              onPrevious={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onNext={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onFirst={() => setCurrentPage(1)}
+              onLast={() => setCurrentPage(totalPages)}
+              canPrevious={currentPage > 1}
+              canNext={currentPage < totalPages}
+            />
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

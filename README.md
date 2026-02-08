@@ -1,73 +1,86 @@
-# React + TypeScript + Vite
+# Bayabas Dev - Admin Dashboard Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive Admin Dashboard built with React, TypeScript, and Vite. This project features a robust set of tools for data visualization, user management, and system administration, tailored for a seamless user experience.
 
-Currently, two official plugins are available:
+## 🚀 Technologies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **Framework:** [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+-   **Language:** [TypeScript](https://www.typescriptlang.org/)
+-   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+-   **UI Components:** [shadcn/ui](https://ui.shadcn.com/) (Radix UI + Tailwind)
+-   **Routing:** [TanStack Router](https://tanstack.com/router)
+-   **Charts:** [Recharts](https://recharts.org/)
+-   **Animations:** [Framer Motion](https://www.framer.com/motion/)
+-   **Icons:** [Lucide React](https://lucide.dev/)
 
-## React Compiler
+## ✨ Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 📊 Admin Dashboard
+-   **Overview**: Interactive KPI cards showing total revenue, subscriptions, sales, and active users.
+-   **Analytics**: Visual data representation using bar charts and recent sales lists.
+-   **Animations**: Smooth entry animations for all dashboard elements.
 
-## Expanding the ESLint configuration
+### 📝 Reports & Analytics
+-   **Reports Page**: Dedicated section for generating and viewing system reports.
+-   **Data Visualization**: Integrated charts for measuring performance key metrics.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 👥 User & Product Management
+-   **Users**: tabular view of system users with pagination.
+-   **Products**: Product inventory management with pagination.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🛠️ Support & Tools
+-   **AI Assistant**: A conversational AI interface for quick help and tasks. Features chat history and auto-scrolling.
+-   **Help Center**: A support hub with categories, popular articles, and contact options.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### ⚙️ System Settings
+-   **Profile**: Manage user details, including a **Profile Avatar** with upload functionality.
+-   **Appearance**: Toggle between Light, Dark, and System themes.
+-   **Notifications**: granular control over email and push notifications.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 🎨 UI/UX
+-   **Sidebar**: Collapsible navigation with a "Settings" popover containing quick links (Terms, What's New, Logout).
+-   **ScrollArea**: Custom, consistent scrollbars across the application.
+-   **Responsive Design**: Fully responsive layout adapting to mobile and desktop screens.
+
+## 📂 Project Structure
+
+```bash
+src/
+├── components/         # Shared UI components
+│   ├── layout/         # Layout components (Sidebar, Header)
+│   ├── ui/             # shadcn/ui primitives (Button, Card, etc.)
+│   └── theme-provider  # Theme context provider
+├── features/           # Feature-based architecture
+│   ├── admin/          # Admin-specific components & pages
+│   │   ├── components/ # Dashboard, Analytics, Settings
+│   │   ├── supports/   # Help Center, AI Assistant
+│   └── auth/           # Authentication logic
+├── lib/                # Utilities (utils.ts)
+├── router.tsx          # TanStack Router configuration
+└── main.tsx            # Entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+
+3.  **Build for production:**
+    ```bash
+    npm run build
+    ```
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).

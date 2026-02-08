@@ -23,22 +23,41 @@ import { Badge } from "../../../components/ui/badge";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { 
-  Eye, 
-  Pencil, 
-  Trash2, 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronsLeft,
-  ChevronsRight,
+import {
+  Eye,
+  Pencil,
+  Trash2,
   ArrowUpDown,
-  Sun,
-  Moon,
+
   Filter,
   Plus
 } from "lucide-react";
+import { Pagination } from "../../../components/layout/Pagination";
 import { type Product } from "../../../types/types";
 import { cn } from "../../../lib/utils";
+import { motion, type Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
+};
 
 interface ProductTableProps {
   products: Product[];
@@ -46,7 +65,7 @@ interface ProductTableProps {
 
 const StatusBadge = ({ status }: { status: string }) => {
   let variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" = "secondary";
-  
+
   switch (status) {
     case "In Stock":
       variant = "success";
@@ -72,17 +91,9 @@ const Products = ({ products }: ProductTableProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [isDarkMode, setIsDarkMode] = React.useState(true);
 
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.remove('dark');
-    } else {
-      html.classList.add('dark');
-    }
-    setIsDarkMode(!isDarkMode);
-  };
+
+
 
 
   const columns = React.useMemo<ColumnDef<Product>[]>(
@@ -114,7 +125,7 @@ const Products = ({ products }: ProductTableProps) => {
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <div 
+          <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1 cursor-pointer hover:text-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
@@ -151,7 +162,7 @@ const Products = ({ products }: ProductTableProps) => {
       {
         accessorKey: "price",
         header: ({ column }) => (
-          <div 
+          <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center justify-end gap-1 cursor-pointer hover:text-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
@@ -171,7 +182,7 @@ const Products = ({ products }: ProductTableProps) => {
       {
         accessorKey: "stock",
         header: ({ column }) => (
-          <div 
+          <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center justify-end gap-1 cursor-pointer hover:text-foreground"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
@@ -245,18 +256,21 @@ const Products = ({ products }: ProductTableProps) => {
               Manage your product inventory and stock levels.
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
+
         </div>
       </header>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto px-8 pb-8 pt-6">
-        <div className="max-w-[1400px] mx-auto flex flex-col h-full space-y-4">
-          
+        <motion.div
+          className="max-w-[1400px] mx-auto flex flex-col h-full space-y-4"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+
           {/* Toolbar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="w-full sm:max-w-sm">
               <Input
                 placeholder="Filter products..."
@@ -277,122 +291,84 @@ const Products = ({ products }: ProductTableProps) => {
                 Add Product
               </Button>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+          <motion.div variants={itemVariants} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
             <Table>
-          <TableHeader className="bg-muted/50">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent border-border">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} className={cn(
-                      "text-xs font-medium uppercase tracking-wider text-muted-foreground",
-                      header.id === "select" ? "w-[40px] pl-4" : ""
-                    )}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+              <TableHeader className="bg-muted/50">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="hover:bg-transparent border-border">
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className={cn(
+                          "text-xs font-medium uppercase tracking-wider text-muted-foreground",
+                          header.id === "select" ? "w-[40px] pl-4" : ""
+                        )}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="border-border hover:bg-muted/30 group transition-colors"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className={cn(
+                          cell.column.id === "select" ? "pl-4" : ""
+                        )}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-border hover:bg-muted/30 group transition-colors"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={cn(
-                      cell.column.id === "select" ? "pl-4" : ""
-                    )}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </motion.div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium text-muted-foreground">Page</p>
-            <span className="text-sm font-medium">
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0 border-border"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0 border-border"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0 border-border"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0 border-border"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+          {/* Pagination Controls */}
+          <motion.div variants={itemVariants}>
+            <Pagination
+              currentPage={table.getState().pagination.pageIndex + 1}
+              totalPages={table.getPageCount()}
+              selectedCount={table.getFilteredSelectedRowModel().rows.length}
+              totalCount={table.getFilteredRowModel().rows.length}
+              onPageChange={(page) => table.setPageIndex(page - 1)}
+              onPrevious={() => table.previousPage()}
+              onNext={() => table.nextPage()}
+              onFirst={() => table.setPageIndex(0)}
+              onLast={() => table.setPageIndex(table.getPageCount() - 1)}
+              canPrevious={table.getCanPreviousPage()}
+              canNext={table.getCanNextPage()}
+            />
+          </motion.div>
+        </motion.div>
       </div>
     </div>
-  </div>
-</div>
   )
 }
 
