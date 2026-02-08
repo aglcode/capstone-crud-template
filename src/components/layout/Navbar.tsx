@@ -1,7 +1,8 @@
 import type React from 'react';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useRouter} from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
+import { Logo } from '@/components/layout/Logo';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,12 +12,8 @@ const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center mx-auto px-4 justify-between">
         <div className="flex items-center gap-2">
-          <div className="bg-primary text-primary-foreground rounded-md p-1 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" className="w-5 h-5" viewBox="0 0 256 256">
-              <path d="M 128 192 C 92.654 192 64 220.654 64 256 L 0 256 C 0 185.308 57.308 128 128 128 Z M 256 128 C 256 198.692 198.692 256 128 256 L 128 192 C 163.346 192 192 163.346 192 128 Z M 128 64 C 92.654 64 64 92.654 64 128 L 0 128 C 0 57.308 57.308 0 128 0 Z M 256 0 C 256 70.692 198.692 128 128 128 L 128 64 C 163.346 64 192 35.346 192 0 Z" fill="currentColor"></path>
-            </svg>
-          </div>
-          <span className="font-bold hidden sm:inline-block">Capstone Template</span>
+          <Logo />
+          <span className="font-bold hidden sm:inline-block">GeekDevs</span>
         </div>
 
         {/* Desktop Nav */}

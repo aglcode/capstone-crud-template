@@ -1,5 +1,6 @@
 import React from 'react'
 import Icon from '../components/ui/Icon';
+import { Logo } from '@/components/layout/Logo';
 import AlertDemo from '../components/layout/Alert';
 import { FEATURES, TESTIMONIALS, PRICING_PLANS, FAQS } from '../components/ui/constants'
 
@@ -66,7 +67,7 @@ const LandingPage: React.FC = () => {
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
             <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-6xl">Trusted by developers worldwide</h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-              See what our community has to say about using DashSystem for their products.
+              See what our community has to say about using GeekDevs for their products.
             </p>
           </div>
           <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
@@ -194,15 +195,11 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
             <div className="flex items-center gap-2">
-              <div className="bg-primary text-primary-foreground rounded-md p-1 h-8 w-8 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" className="w-4.5 h-4.5" viewBox="0 0 256 256">
-                  <path d="M 128 192 C 92.654 192 64 220.654 64 256 L 0 256 C 0 185.308 57.308 128 128 128 Z M 256 128 C 256 198.692 198.692 256 128 256 L 128 192 C 163.346 192 192 163.346 192 128 Z M 128 64 C 92.654 64 64 92.654 64 128 L 0 128 C 0 57.308 57.308 0 128 0 Z M 256 0 C 256 70.692 198.692 128 128 128 L 128 64 C 163.346 64 192 35.346 192 0 Z" fill="currentColor"></path>
-                </svg>
-              </div>
-              <span className="font-bold text-lg">DashSystem</span>
+              <Logo size={24} className="h-8 w-8" />
+              <span className="font-bold text-lg">GeekDevs</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 DashSystem Inc.
+              © 2026 GeekDevs Inc.
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
     RouterProvider,
     createRootRoute,
@@ -20,6 +20,13 @@ import UsersPage from './features/admin/components/UsersPage'
 import Sidebar from './components/layout/Sidebar'
 import Products from './features/admin/components/Products'
 import { PRODUCTS } from './features/constants/ConstantsProducts'
+import { ThemeProvider, useTheme } from '@/components/theme-provider'
+import DashboardHeader from '@/components/layout/DashboardHeader'
+import AdminAnalytics from './features/admin/components/AdminAnalytics'
+import AdminReports from './features/admin/components/AdminReports'
+import HelpCenter from './features/admin/supports/HelpCenter'
+import AiAssistant from './features/admin/supports/AiAssistant'
+import Settings from './features/admin/components/AdminProfile/Settings'
 
 const isAuthenticated = () => {
     return !!localStorage.getItem('authToken');
@@ -36,15 +43,7 @@ function RootComponent() {
 
 // Public layout with Navbar and theme toggle
 function PublicLayout() {
-    const [isDark, setIsDark] = useState(false);
-
-    useEffect(() => {
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [isDark]);
+    const { setTheme, theme } = useTheme();
 
     return (
         <>
@@ -53,10 +52,11 @@ function PublicLayout() {
                 <Outlet />
             </div>
             <button
-                onClick={() => setIsDark(!isDark)}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
+                title="Toggle Theme"
             >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
         </>
     );
@@ -81,8 +81,11 @@ function DashboardLayout() {
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
-            <div className="flex-1 overflow-hidden">
-                <Outlet />
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <DashboardHeader />
+                <div className="flex-1 overflow-auto">
+                    <Outlet />
+                </div>
             </div>
         </div>
     );
@@ -165,13 +168,39 @@ const productsRoute = createRoute({
 const analyticsRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/analytics",
-    component: () => <div className="p-8">Analytics Page (Coming Soon)</div>,
+    component: AdminAnalytics,
 })
 
 const reportsRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/reports",
-    component: () => <div className="p-8">Reports Page (Coming Soon)</div>,
+    component: AdminReports,
+})
+
+const helpCenterRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/support",
+    component: HelpCenter,
+})
+
+const aiAssistantRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/ai-assistant",
+    component: AiAssistant,
+})
+
+const settingsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/settings",
+    component: Settings,
+})
+
+import New from './features/admin/components/AdminProfile/New'
+
+const whatsNewRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/whats-new",
+    component: New,
 })
 
 const notFoundRoute = createRoute({
@@ -204,6 +233,10 @@ const routeTree = rootRoute.addChildren([
         productsRoute,
         analyticsRoute,
         reportsRoute,
+        helpCenterRoute,
+        aiAssistantRoute,
+        settingsRoute,
+        whatsNewRoute
     ]),
     notFoundRoute,
 ])
@@ -216,11 +249,14 @@ declare module "@tanstack/react-router" {
     }
 }
 
+import { ToastAlerts } from '@/components/layout/ToastAlerts'
+
 export function AppRouter() {
     return (
-        <>
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
             <RouterProvider router={router} />
+            <ToastAlerts />
             {/* {import.meta.env.DEV ? <TanStackRouterDevtools router={router} /> : null} */}
-        </>
+        </ThemeProvider>
     )
 }
