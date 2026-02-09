@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Lock, Bell, Monitor, Palette } from "lucide-react";
+import { User, Shield, Bell, History, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ import Profile from "./components/Profile";
 import ManageAccount from "./components/ManageAccount";
 import Appearance from "./components/Appearance";
 import Notifications from "./components/Notifications";
-import Display from "./components/Display";
+import BackupAndLogs from "./components/BackupAndLogs";
 
 const sidebarNavItems = [
     {
@@ -19,8 +19,8 @@ const sidebarNavItems = [
         id: "profile"
     },
     {
-        title: "Manage Account",
-        icon: Lock,
+        title: "Account & Security",
+        icon: Shield,
         id: "account"
     },
     {
@@ -34,9 +34,9 @@ const sidebarNavItems = [
         id: "notifications"
     },
     {
-        title: "Display",
-        icon: Monitor,
-        id: "display"
+        title: "Backup and Logs",
+        icon: History,
+        id: "backupAndLogs"
     },
 ];
 
@@ -75,7 +75,8 @@ export default function Settings() {
                                 ))}
                             </nav>
                         </aside>
-                        <div className="flex-1 lg:max-w-2xl">
+
+                        <div className={cn("flex-1", activeTab === "backupAndLogs" ? "lg:max-w-full" : "lg:max-w-2xl")}>
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeTab}
@@ -83,12 +84,13 @@ export default function Settings() {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                     transition={{ duration: 0.2 }}
+                                    className="h-full"
                                 >
                                     {activeTab === "profile" && <Profile />}
                                     {activeTab === "account" && <ManageAccount />}
                                     {activeTab === "appearance" && <Appearance />}
                                     {activeTab === "notifications" && <Notifications />}
-                                    {activeTab === "display" && <Display />}
+                                    {activeTab === "backupAndLogs" && <BackupAndLogs />}
                                 </motion.div>
                             </AnimatePresence>
                         </div>

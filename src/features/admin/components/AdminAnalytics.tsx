@@ -1,9 +1,10 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar, Legend, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar, Legend } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Users, Activity, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
+import CustomActiveShapePieChart from '../../../components/layout/CustomPieChart';
 
 // Mock Data
 const revenueData = [
@@ -37,10 +38,10 @@ const trafficData = [
 ];
 
 const metricData = [
-    { name: 'Active', value: 400, color: '#0088FE' },
-    { name: 'Inactive', value: 300, color: '#00C49F' },
-    { name: 'Pending', value: 300, color: '#FFBB28' },
-    { name: 'Banned', value: 200, color: '#FF8042' },
+    { name: 'Active', value: 400, color: 'hsl(var(--primary))' },
+    { name: 'Inactive', value: 300, color: 'hsl(var(--muted))' },
+    { name: 'Pending', value: 300, color: 'hsl(var(--accent))' },
+    { name: 'Banned', value: 200, color: 'hsl(var(--destructive))' },
 ];
 
 const containerVariants = {
@@ -206,26 +207,7 @@ function AdminAnalytics() {
                                     <CardDescription>Status distribution of system entities.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <PieChart>
-                                            <Pie
-                                                data={metricData}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={60}
-                                                outerRadius={80}
-                                                fill="#8884d8"
-                                                paddingAngle={5}
-                                                dataKey="value"
-                                            >
-                                                {metricData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }} />
-                                            <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ color: 'hsl(var(--foreground))' }} />
-                                        </PieChart>
-                                    </ResponsiveContainer>
+                                    <CustomActiveShapePieChart data={metricData} />
                                 </CardContent>
                             </Card>
                         </motion.div>
