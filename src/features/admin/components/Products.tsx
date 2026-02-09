@@ -36,6 +36,7 @@ import { Pagination } from "../../../components/layout/Pagination";
 import { type Product } from "../../../types/types";
 import { cn } from "../../../lib/utils";
 import { motion, type Variants } from "framer-motion";
+import { AddProductModal } from "./adminmodals/AddProductModal";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -91,6 +92,7 @@ const Products = ({ products }: ProductTableProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = React.useState(false);
 
 
 
@@ -286,7 +288,7 @@ const Products = ({ products }: ProductTableProps) => {
                 <Filter className="mr-2 h-4 w-4" />
                 Columns
               </Button>
-              <Button size="sm" className="h-9">
+              <Button size="sm" className="h-9" onClick={() => setIsAddProductModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Product
               </Button>
@@ -368,6 +370,7 @@ const Products = ({ products }: ProductTableProps) => {
           </motion.div>
         </motion.div>
       </div>
+      <AddProductModal isOpen={isAddProductModalOpen} onClose={() => setIsAddProductModalOpen(false)} />
     </div>
   )
 }

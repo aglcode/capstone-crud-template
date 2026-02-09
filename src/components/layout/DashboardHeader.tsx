@@ -1,5 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from '@tanstack/react-router';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Moon, Sun, Search, Bell } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
@@ -12,41 +20,71 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ className }) => {
     const { setTheme, theme } = useTheme();
-    /* const navigate = useNavigate(); */
     const location = useLocation();
+    const pathSegments = location.pathname.split('/').filter(Boolean);
 
-    const tabs = [
-        { name: 'Overview', path: '/dashboard' },
-        { name: 'Customers', path: '/dashboard/users' },
-        { name: 'Products', path: '/dashboard/products' },
-        { name: 'Reports', path: '/dashboard/reports' },
-        { name: 'Help Center', path: '/dashboard/support' },
-        { name: 'AI Assistant', path: '/dashboard/ai-assistant' },
-        { name: 'Settings', path: '/dashboard/settings' }, // Placeholder for now
-    ];
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Map of path segments to readable names
+    const breadcrumbNameMap: Record<string, string> = {
+        'dashboard': 'Dashboard',
+        'users': 'Customers',
+        'products': 'Products',
+        'reports': 'Reports',
+        'support': 'Help Center',
+        'ai-assistant': 'AI Assistant',
+        'settings': 'Settings',
+        'backups': 'Backups & Logs'
+    };
 
     return (
         <header className={cn("sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
             <div className="flex h-16 items-center px-6 gap-4">
 
-                {/* Navigation Tabs */}
-                <nav className="flex items-center gap-6 text-sm font-medium text-muted-foreground mr-auto">
-                    {tabs.map((tab) => {
-                        const isActive = location.pathname === tab.path;
-                        return (
-                            <Link
-                                key={tab.path}
-                                to={tab.path}
-                                className={cn(
-                                    "transition-colors hover:text-primary",
-                                    isActive ? "text-foreground font-semibold" : "text-muted-foreground"
-                                )}
-                            >
-                                {tab.name}
-                            </Link>
-                        );
-                    })}
-                </nav>
+                {/* Breadcrumbs */}
+                <div className="mr-auto flex items-center">
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink asChild>
+                                    <Link to="/dashboard">Dashboard</Link>
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+
+                            {pathSegments.length > 0 && pathSegments[0] !== 'dashboard' && (
+                                <BreadcrumbSeparator />
+                            )}
+
+                            {pathSegments.map((segment, index) => {
+                                if (segment === 'dashboard') return null; // Already added explicitly
+
+                                const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
+                                const isLast = index === pathSegments.length - 1;
+                                const name = breadcrumbNameMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+
+                                return (
+                                    <React.Fragment key={path}>
+                                        <BreadcrumbSeparator />
+                                        <BreadcrumbItem>
+                                            {isLast ? (
+                                                <BreadcrumbPage>{name}</BreadcrumbPage>
+                                            ) : (
+                                                <BreadcrumbLink asChild>
+                                                    <Link to={path}>{name}</Link>
+                                                </BreadcrumbLink>
+                                            )}
+                                        </BreadcrumbItem>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
 
                 {/* Search Bar */}
                 <div className="hidden md:flex items-center gap-2">
@@ -62,6 +100,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ className }) => {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
+                    <div className="hidden lg:flex flex-col items-end mr-2">
+                        <span className="text-sm font-semibold tabular-nums leading-none">
+                            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground leading-none mt-1">
+                            {currentTime.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </span>
+                    </div>
                     <Button variant="ghost" size="icon" className="text-muted-foreground">
                         <Bell className="h-5 w-5" />
                     </Button>

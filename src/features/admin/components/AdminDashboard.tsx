@@ -12,6 +12,7 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip } from "recharts";
 // import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../components/tabs";
 
 import { motion, type Variants } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 
 interface DashboardProps {
   onMenuClick: () => void;
@@ -59,7 +60,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const AdminDashboard = ({ onMenuClick }: DashboardProps) => {
 
-
   return (
     <div className="flex flex-1 flex-col h-full relative overflow-hidden bg-background">
 
@@ -84,15 +84,24 @@ const AdminDashboard = ({ onMenuClick }: DashboardProps) => {
               <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md bg-background px-3 py-1 text-sm font-medium text-foreground shadow-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 Overview
               </button>
-              <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                Analytics
-              </button>
-              <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                Reports
-              </button>
-              <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+              <Link
+                to="/dashboard/calendar"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              >
+                Calendar
+              </Link>
+              <Link
+                to="/dashboard/status"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              >
+                Status
+              </Link>
+              <Link
+                to="/dashboard/notifications"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:bg-background/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              >
                 Notifications
-              </button>
+              </Link>
             </div>
 
             {/* Stats Cards */}

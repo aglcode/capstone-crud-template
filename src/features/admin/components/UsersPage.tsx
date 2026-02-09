@@ -16,6 +16,7 @@ import { Plus, Filter, Eye, Pencil, Trash2 } from "lucide-react";
 import { type User, type UserStatus } from '../../../types/types';
 import { motion, type Variants } from "framer-motion";
 import { Pagination } from "../../../components/layout/Pagination";
+import { AddUserModal } from "./adminmodals/AddUserModal";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -105,6 +106,7 @@ const StatusBadge = ({ status }: { status: UserStatus }) => {
 export default function UsersPage() {
   const [users] = useState<User[]>(INITIAL_USERS);
   const [selectedUsers, setSelectedUsers] = useState<string[]>(['1']);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -166,7 +168,7 @@ export default function UsersPage() {
                 <Filter className="mr-2 h-4 w-4" />
                 Columns
               </Button>
-              <Button size="sm" className="h-9">
+              <Button size="sm" className="h-9" onClick={() => setIsAddUserModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add User
               </Button>
@@ -265,6 +267,7 @@ export default function UsersPage() {
           </motion.div>
         </motion.div>
       </div>
+      <AddUserModal isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} />
     </div>
   );
 }

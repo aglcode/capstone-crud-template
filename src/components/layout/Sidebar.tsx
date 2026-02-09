@@ -10,11 +10,8 @@ import {
   Settings,
   HelpCircle,
   Bot,
-  Layers,
   PanelLeft,
   LogOut,
-  User,
-  CreditCard,
   Handshake,
   BadgeQuestionMark
 } from "lucide-react";
@@ -242,13 +239,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, toggleCollapse }
                       )}
                     </Link>
 
-                    <button
-                      onClick={() => console.log("Terms and Conditions")}
-                      className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
-                    >
-                      <Handshake className="mr-2 h-4 w-4" />
-                      <span>Terms and Conditions</span>
-                    </button>
+                    <Link to="/dashboard/terms" className="w-full">
+                      {({ isActive }) => (
+                        <div
+                          className={cn(
+                            "flex w-full items-center rounded-sm px-2 py-1.5 text-sm font-medium cursor-pointer transition-colors",
+                            isActive
+                              ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <Handshake className="mr-2 h-4 w-4" />
+                          <span>Terms and Conditions</span>
+                        </div>
+                      )}
+                    </Link>
 
                     <Link to="/dashboard/settings" className="w-full">
                       {({ isActive }) => (

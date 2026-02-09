@@ -6,7 +6,8 @@ import {
     Plus,
     MessageSquare,
     MoreVertical,
-    Paperclip
+    Paperclip,
+    PanelLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,7 @@ export default function AiAssistant() {
     const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const handleSendMessage = () => {
@@ -97,13 +99,31 @@ export default function AiAssistant() {
     return (
         <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background">
             {/* Sidebar - Chat History */}
-            <div className="w-80 border-r border-border bg-muted/10 hidden md:flex flex-col">
-                <div className="p-4 space-y-4">
-                    <Button className="w-full justify-start gap-2" size="lg">
-                        <Plus className="w-5 h-5" />
-                        New Chat
+            <div className={cn(
+                "border-r border-border bg-muted/10 hidden md:flex flex-col transition-all duration-300 ease-in-out",
+                isSidebarOpen ? "w-80" : "w-[70px]"
+            )}>
+                <div className={cn("p-4 pb-0 flex items-center", isSidebarOpen ? "justify-between" : "justify-center")}>
+                    <span className={cn("font-semibold text-sm", !isSidebarOpen && "hidden")}>Chats</span>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn("text-muted-foreground", isSidebarOpen ? "-mr-2" : "")}
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    >
+                        <PanelLeft className="h-4 w-4" />
                     </Button>
-                    <div className="relative">
+                </div>
+                <div className="p-4 space-y-4">
+                    <Button
+                        className={cn("w-full gap-2", isSidebarOpen ? "justify-start" : "justify-center px-0")}
+                        size={isSidebarOpen ? "lg" : "icon"}
+                        variant={isSidebarOpen ? "default" : "ghost"}
+                    >
+                        <Plus className="w-5 h-5" />
+                        {isSidebarOpen && "New Chat"}
+                    </Button>
+                    <div className={cn("relative", !isSidebarOpen && "hidden")}>
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Search chats..." className="pl-9 h-9" />
                     </div>
@@ -114,7 +134,10 @@ export default function AiAssistant() {
                         {/* Group by Date */}
                         {['Today', 'Yesterday'].map(dateGroup => (
                             <div key={dateGroup} className="space-y-2">
-                                <h3 className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                <h3 className={cn(
+                                    "px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2",
+                                    !isSidebarOpen && "text-center sr-only"
+                                )}>
                                     {dateGroup}
                                 </h3>
                                 <div className="space-y-1">
@@ -122,10 +145,13 @@ export default function AiAssistant() {
                                         <Button
                                             key={chat.id}
                                             variant="ghost"
-                                            className="w-full justify-start text-sm font-normal h-auto py-2 px-3 truncate"
+                                            className={cn(
+                                                "w-full justify-start text-sm font-normal h-auto py-2 px-3",
+                                                !isSidebarOpen && "justify-center px-2"
+                                            )}
                                         >
-                                            <MessageSquare className="mr-2 h-4 w-4 shrink-0 opacity-70" />
-                                            <span className="truncate">{chat.title}</span>
+                                            <MessageSquare className={cn("h-4 w-4 shrink-0", isSidebarOpen ? "mr-2 opacity-70" : "")} />
+                                            <span className={cn("truncate", !isSidebarOpen && "hidden")}>{chat.title}</span>
                                         </Button>
                                     ))}
                                 </div>
@@ -134,18 +160,7 @@ export default function AiAssistant() {
                     </div>
                 </ScrollArea>
 
-                <div className="p-4 border-t border-border">
-                    <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>AM</AvatarFallback>
-                        </Avatar>
-                        <div className="text-sm">
-                            <p className="font-medium leading-none">Alex Morgan</p>
-                            <p className="text-muted-foreground text-xs">alex@enterprise.com</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             {/* Main Chat Area */}

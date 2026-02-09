@@ -8,7 +8,7 @@ import {
     Outlet,
     Link,
 } from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+
 import { Moon, Sun } from "lucide-react"
 
 import LandingPage from './pages/LandingPage'
@@ -203,6 +203,38 @@ const whatsNewRoute = createRoute({
     component: New,
 })
 
+import Calendar from './features/admin/components/DashboardPages/Calendar'
+
+const calendarRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/calendar",
+    component: Calendar,
+})
+
+import Notifications from './features/admin/components/DashboardPages/Notifications'
+
+const notificationsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/notifications",
+    component: Notifications,
+})
+
+import Status from './features/admin/components/DashboardPages/Status'
+
+const statusRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/status",
+    component: Status,
+})
+
+import TermsAndConditions from './features/admin/components/AdminProfile/TermsAndConditions'
+
+const termsRoute = createRoute({
+    getParentRoute: () => dashboardLayoutRoute,
+    path: "/terms",
+    component: TermsAndConditions,
+})
+
 const notFoundRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "*",
@@ -236,7 +268,12 @@ const routeTree = rootRoute.addChildren([
         helpCenterRoute,
         aiAssistantRoute,
         settingsRoute,
-        whatsNewRoute
+
+        whatsNewRoute,
+        termsRoute,
+        calendarRoute,
+        notificationsRoute,
+        statusRoute
     ]),
     notFoundRoute,
 ])
