@@ -1,4 +1,4 @@
-# Bayabas Dev - Admin Dashboard Template
+# Geek Devs - Admin Dashboard Template
 
 A modern, responsive Admin Dashboard built with React, TypeScript, and Vite. This project features a robust set of tools for data visualization, user management, and system administration, tailored for a seamless user experience.
 
