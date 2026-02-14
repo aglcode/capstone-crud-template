@@ -24,6 +24,7 @@ import {
 import { Button } from "../../components/ui/button"
 import { Separator } from "../../components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar";
+import Logout from '@/features/auth/components/Logout';
 import { cn } from "../../lib/utils";
 
 
@@ -278,8 +279,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, toggleCollapse }
                       onClick={() => console.log("Logout")}
                       className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm font-medium text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/20 cursor-pointer transition-colors"
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                      <Logout />
                     </button>
                   </div>
                 </PopoverContent>
