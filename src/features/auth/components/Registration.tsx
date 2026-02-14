@@ -4,6 +4,9 @@ import { Link } from '@tanstack/react-router';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -14,44 +17,41 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const Registration = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
+const registrationSchema = z.object({
+  name: z.string(),
+  email: z.string().email('Invalid gmail address')
+    .regex(/@gmail\.com$/, "Invalid gmail address"),
+  password: z.string().min(8, 'Password must be 8 characters or more.')
+});
 
+type RegistrationForm = z.infer<typeof registrationSchema>;
+
+const Registration = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationForm>({
+    resolver: zodResolver(registrationSchema),
+  });
+  const onSubmit = async (formData: RegistrationForm) => {
     setLoading(true);
-    setError(null);
-
+    setServerError(null);
     const { error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
         data: {
           name: formData.name
-        }
+        },
+        emailRedirectTo: `${window.location.origin}/login`
       }
     });
-
     setLoading(false);
-
     if (error) {
-      setError(error.message);
+      setServerError(error.message);
       return;
     }
-
     navigate({ to: '/login' });
   };
 
@@ -66,10 +66,11 @@ const Registration = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
-            {error && (
-              <div className="text-red-500 text-sm text-center">{error}</div>
+            {serverError && (
+              <div className="text-red-500 text-sm text-center">{serverError}</div>
             )}
-            <form onSubmit={handleSubmit}>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
@@ -77,10 +78,11 @@ const Registration = () => {
                     id="name"
                     placeholder="John Doe"
                     type="text"
-                    value={formData.name}
-                    onChange={handleChange}
+                    {...register("name")}
                   />
+                  {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -89,21 +91,22 @@ const Registration = () => {
                     type="email"
                     autoCapitalize="none"
                     autoComplete="email"
-                    autoCorrect="off"
-                    value={formData.email}
-                    onChange={handleChange}
+                    {...register("email")}
                   />
+                  {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     autoComplete="new-password"
-                    value={formData.password}
-                    onChange={handleChange}
+                    {...register("password")}
                   />
+                  {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                 </div>
+
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Creating account...' : 'Create account'}
                 </Button>

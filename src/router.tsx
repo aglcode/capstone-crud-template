@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     RouterProvider,
-    createRootRoute,
+    createRootRouteWithContext,
     createRoute,
     createRouter,
     redirect,
     Outlet,
     Link,
 } from "@tanstack/react-router"
-
+import { supabase } from "./lib/supabase"
+import { ToastAlerts } from '@/components/layout/ToastAlerts'
 import { Moon, Sun } from "lucide-react"
 
 import LandingPage from './pages/LandingPage'
@@ -27,6 +28,18 @@ import AdminReports from './features/admin/components/AdminReports'
 import HelpCenter from './features/admin/supports/HelpCenter'
 import AiAssistant from './features/admin/supports/AiAssistant'
 import Settings from './features/admin/components/AdminProfile/Settings'
+import New from './features/admin/components/AdminProfile/New'
+import Calendar from './features/admin/components/DashboardPages/Calendar'
+import Notifications from './features/admin/components/DashboardPages/Notifications'
+import Status from './features/admin/components/DashboardPages/Status'
+import TermsAndConditions from './features/admin/components/AdminProfile/TermsAndConditions'
+
+interface RouterContext {
+    authentication: {
+        isAuthenticated: boolean;
+        userRole: string | undefined;
+    }
+}
 
 const isAuthenticated = () => {
     return !!localStorage.getItem('authToken');
@@ -91,7 +104,7 @@ function DashboardLayout() {
     );
 }
 
-const rootRoute = createRootRoute({
+const rootRoute = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
 })
 
@@ -120,12 +133,13 @@ const registerRoute = createRoute({
     component: Registration,
 })
 
-// Dashboard layout route (temporarily unprotected)
 const dashboardLayoutRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: "/dashboard",
-    beforeLoad: async () => {
-        if (!isAuthenticated()) {
+    beforeLoad: async ({ context }) => {
+        const { isAuthenticated } = context.authentication;
+
+        if (!isAuthenticated) {
             throw redirect({
                 to: '/login',
                 search: {
@@ -195,15 +209,11 @@ const settingsRoute = createRoute({
     component: Settings,
 })
 
-import New from './features/admin/components/AdminProfile/New'
-
 const whatsNewRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/whats-new",
     component: New,
 })
-
-import Calendar from './features/admin/components/DashboardPages/Calendar'
 
 const calendarRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
@@ -211,23 +221,17 @@ const calendarRoute = createRoute({
     component: Calendar,
 })
 
-import Notifications from './features/admin/components/DashboardPages/Notifications'
-
 const notificationsRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/notifications",
     component: Notifications,
 })
 
-import Status from './features/admin/components/DashboardPages/Status'
-
 const statusRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/status",
     component: Status,
 })
-
-import TermsAndConditions from './features/admin/components/AdminProfile/TermsAndConditions'
 
 const termsRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
@@ -278,7 +282,15 @@ const routeTree = rootRoute.addChildren([
     notFoundRoute,
 ])
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({
+    routeTree,
+    context: {
+        authentication: {
+            isAuthenticated: false,
+            userRole: undefined,
+        },
+    },
+});
 
 declare module "@tanstack/react-router" {
     interface Register {
@@ -286,12 +298,37 @@ declare module "@tanstack/react-router" {
     }
 }
 
-import { ToastAlerts } from '@/components/layout/ToastAlerts'
-
 export function AppRouter() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userRole, setUserRole] = useState<string | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Check active session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setIsAuthenticated(!!session);
+            // userRole logic can be added here
+            setIsLoading(false);
+        });
+
+        // Listen for changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsAuthenticated(!!session);
+            setIsLoading(false);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    }
+
     return (
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-            <RouterProvider router={router} />
+            <RouterProvider router={router} context={{ authentication: { isAuthenticated, userRole, } }} />
             <ToastAlerts />
             {/* {import.meta.env.DEV ? <TanStackRouterDevtools router={router} /> : null} */}
         </ThemeProvider>
