@@ -2,7 +2,7 @@
 
 A modern, responsive Admin Dashboard built with React, TypeScript, and Vite. This project features a robust set of tools for data visualization, user management, and system administration, tailored for a seamless user experience.
 
-## 🚀 Technologies
+## Technologies
 
 -   **Framework:** [React](https://react.dev/) + [Vite](https://vitejs.dev/)
 -   **Language:** [TypeScript](https://www.typescriptlang.org/)
@@ -13,22 +13,22 @@ A modern, responsive Admin Dashboard built with React, TypeScript, and Vite. Thi
 -   **Animations:** [Framer Motion](https://www.framer.com/motion/)
 -   **Icons:** [Lucide React](https://lucide.dev/)
 
-## ✨ Key Features
+## Key Features
 
-### 📊 Admin Dashboard
+### Admin Dashboard
 -   **Overview**: Interactive KPI cards showing total revenue, subscriptions, sales, and active users.
 -   **Analytics**: Visual data representation using bar charts and recent sales lists.
 -   **Animations**: Smooth entry animations for all dashboard elements.
 
-### 📝 Reports & Analytics
+### Reports & Analytics
 -   **Reports Page**: Dedicated section for generating and viewing system reports.
 -   **Data Visualization**: Integrated charts for measuring performance key metrics.
 
-### 👥 User & Product Management
+### User & Product Management
 -   **Users**: tabular view of system users with pagination.
 -   **Products**: Product inventory management with pagination.
 
-### 🛠️ Support & Tools
+### Support & Tools
 -   **AI Assistant**: A conversational AI interface for quick help and tasks. Features chat history and auto-scrolling.
 -   **Help Center**: A support hub with categories, popular articles, and contact options.
 
@@ -37,12 +37,12 @@ A modern, responsive Admin Dashboard built with React, TypeScript, and Vite. Thi
 -   **Appearance**: Toggle between Light, Dark, and System themes.
 -   **Notifications**: granular control over email and push notifications.
 
-### 🎨 UI/UX
+### UI/UX
 -   **Sidebar**: Collapsible navigation with a "Settings" popover containing quick links (Terms, What's New, Logout).
 -   **ScrollArea**: Custom, consistent scrollbars across the application.
 -   **Responsive Design**: Fully responsive layout adapting to mobile and desktop screens.
 
-## 📂 Project Structure
+## Project Structure
 
 ```bash
 src/
@@ -60,7 +60,7 @@ src/
 └── main.tsx            # Entry point
 ```
 
-## 🛠️ Getting Started
+## Getting Started
 
 1.  **Install dependencies:**
     ```bash
@@ -80,7 +80,3 @@ src/
     ```bash
     npm run build
     ```
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
