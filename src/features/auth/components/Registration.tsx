@@ -31,13 +31,31 @@ const Registration = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationForm>({
+  const { register, handleSubmit, formState: { errors }, setError } = useForm<RegistrationForm>({
     resolver: zodResolver(registrationSchema),
   });
   const onSubmit = async (formData: RegistrationForm) => {
     setLoading(true);
     setServerError(null);
-    const { error } = await supabase.auth.signUp({
+
+    // check email if already exist in db
+    // const { data: existingUser, error: checkError } = await supabase .from('users').select('id').eq('email', formData.email).maybeSingle(); 
+
+    // if (checkError) {
+    //   setLoading(false);
+    //   setServerError('Something went wrong. Please try again.');
+    //   return;
+    // }
+
+    // if (existingUser) {
+    //   setLoading(false);
+    //   setError('email', {
+    //     type: 'manual', message: 'This email is already in use.'
+    //   });
+    //   return;
+    // }
+
+    const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
@@ -48,8 +66,24 @@ const Registration = () => {
       }
     });
     setLoading(false);
+
     if (error) {
+      // if (error.message.toLowerCase().includes('already registered')) {
+      //   setError('email', {
+      //     type: 'manual', 
+      //     message: 'This email is already in use.'
+      //   });
+      // }
       setServerError(error.message);
+      return;
+    }
+
+    const user = data?.user;
+    if (user && Array.isArray(user.identities) && user.identities.length === 0) {
+      setError('email', {
+        type: 'manual',
+        message: 'This email is already registered. Please sign in to your account.'
+      });
       return;
     }
     navigate({ to: '/login' });
