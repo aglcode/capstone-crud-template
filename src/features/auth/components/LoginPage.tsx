@@ -2,10 +2,11 @@ import React from 'react'
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { supabase } from '@/lib/supabase';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const search = useSearch({ strict: false }) as { message?: string } | undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +68,11 @@ const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
+            {search?.message === 'check_email' && (
+              <div className="text-green-600 dark:text-green-400 text-sm text-center mb-4 bg-green-50 dark:bg-green-950/30 py-2 px-3 rounded-md">
+                Check your email and click the confirmation link to activate your account.
+              </div>
+            )}
             {error && (
               <div className="text-red-500 text-sm text-center mb-4">{error}</div>
             )}
@@ -106,7 +113,14 @@ const LoginPage = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? (
+                    <>
+                      <Spinner className="mr-2 size-4" />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
                 </Button>
               </div>
             </form>

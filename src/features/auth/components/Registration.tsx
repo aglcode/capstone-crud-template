@@ -1,9 +1,9 @@
-import React from 'react'
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -39,21 +39,21 @@ const Registration = () => {
     setServerError(null);
 
     // check email if already exist in db
-    // const { data: existingUser, error: checkError } = await supabase .from('users').select('id').eq('email', formData.email).maybeSingle(); 
+    const { data: existingUser, error: checkError } = await supabase .from('users').select('id').eq('email', formData.email).maybeSingle(); 
 
-    // if (checkError) {
-    //   setLoading(false);
-    //   setServerError('Something went wrong. Please try again.');
-    //   return;
-    // }
+    if (checkError) {
+      setLoading(false);
+      setServerError('Something went wrong. Please try again.');
+      return;
+    }
 
-    // if (existingUser) {
-    //   setLoading(false);
-    //   setError('email', {
-    //     type: 'manual', message: 'This email is already in use.'
-    //   });
-    //   return;
-    // }
+    if (existingUser) {
+      setLoading(false);
+      setError('email', {
+        type: 'manual', message: 'This email is already in use.'
+      });
+      return;
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
@@ -68,12 +68,6 @@ const Registration = () => {
     setLoading(false);
 
     if (error) {
-      // if (error.message.toLowerCase().includes('already registered')) {
-      //   setError('email', {
-      //     type: 'manual', 
-      //     message: 'This email is already in use.'
-      //   });
-      // }
       setServerError(error.message);
       return;
     }
@@ -82,11 +76,17 @@ const Registration = () => {
     if (user && Array.isArray(user.identities) && user.identities.length === 0) {
       setError('email', {
         type: 'manual',
-        message: 'This email is already registered. Please sign in to your account.'
+        message: 'This email is already registered. Please sign in.'
       });
       return;
     }
-    navigate({ to: '/login' });
+
+    // Success: Supabase may require email confirmation. Redirect to login with message.
+    setServerError(null);
+    navigate({
+      to: '/login',
+      search: { message: 'check_email' }
+    });
   };
 
   return (
@@ -142,7 +142,14 @@ const Registration = () => {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Creating account...' : 'Create account'}
+                  {loading ? (
+                    <>
+                      <Spinner className="mr-2 size-4" />
+                      Creating account...
+                    </>
+                  ) : (
+                    'Create account'
+                  )}
                 </Button>
               </div>
             </form>

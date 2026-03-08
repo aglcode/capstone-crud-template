@@ -1,10 +1,10 @@
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useTheme } from "@/components/theme-provider";
+import { useThemeStore } from "@/stores/theme.store";
 import { cn } from "@/lib/utils";
 
 export default function Appearance() {
-    const { setTheme, theme } = useTheme();
+    const { setTheme, theme } = useThemeStore();
 
     return (
         <div className="space-y-6">
