@@ -21,7 +21,8 @@ import UsersPage from './features/admin/components/UsersPage'
 import Sidebar from './components/layout/Sidebar'
 import Products from './features/admin/components/Products'
 import { PRODUCTS } from './features/constants/ConstantsProducts'
-import { ThemeProvider, useTheme } from '@/components/theme-provider'
+import { ThemeSync } from '@/components/theme-sync'
+import { GlobalSpinner } from '@/components/GlobalSpinner'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import AdminAnalytics from './features/admin/components/AdminAnalytics'
 import AdminReports from './features/admin/components/AdminReports'
@@ -33,16 +34,14 @@ import Calendar from './features/admin/components/DashboardPages/Calendar'
 import Notifications from './features/admin/components/DashboardPages/Notifications'
 import Status from './features/admin/components/DashboardPages/Status'
 import TermsAndConditions from './features/admin/components/AdminProfile/TermsAndConditions'
+import { useThemeStore } from './stores'
+import { useSidebarStore } from '@/stores/sidebar.store'
 
 interface RouterContext {
     authentication: {
         isAuthenticated: boolean;
         userRole: string | undefined;
     }
-}
-
-const isAuthenticated = () => {
-    return !!localStorage.getItem('authToken');
 }
 
 // Root component without Navbar
@@ -56,53 +55,51 @@ function RootComponent() {
 
 // Public layout with Navbar and theme toggle
 function PublicLayout() {
-    const { setTheme, theme } = useTheme();
+    const { setTheme, theme } = useThemeStore();
 
     return (
         <>
-            <Navbar />
-            <div className='flex-1'>
-                <Outlet />
-            </div>
-            <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
-                title="Toggle Theme"
-            >
-                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+          <Navbar />
+          <div className='flex-1'>
+            <Outlet />
+          </div>
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
         </>
-    );
-}
+      );
+    }
 
 // Admin Dashboard Layout
 function DashboardLayout() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
+    const { isSidebarOpen, isCollapsed, toggleCollapse, closeSidebar } = useSidebarStore();
+  
     return (
-        <div className="flex h-screen overflow-hidden">
-            <Sidebar
-                isOpen={isSidebarOpen}
-                isCollapsed={isCollapsed}
-                toggleCollapse={() => setIsCollapsed(!isCollapsed)}
-            />
-            {/* Overlay for mobile */}
-            {isSidebarOpen && (
-                <div
-                    className="fixed inset-0 z-40 bg-black/50 md:hidden"
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <DashboardHeader />
-                <div className="flex-1 overflow-auto">
-                    <Outlet />
-                </div>
-            </div>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar
+          isOpen={isSidebarOpen}
+          isCollapsed={isCollapsed}
+          toggleCollapse={toggleCollapse}
+        />
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={closeSidebar}
+          />
+        )}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <DashboardHeader />
+          <div className="flex-1 overflow-auto">
+            <Outlet />
+          </div>
         </div>
+      </div>
     );
-}
+  }
 
 const rootRoute = createRootRouteWithContext<RouterContext>()({
     component: RootComponent,
@@ -156,10 +153,10 @@ const dashboardIndexRoute = createRoute({
     getParentRoute: () => dashboardLayoutRoute,
     path: "/",
     component: function DashboardPage() {
-        const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-        return <AdminDashboard onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />;
+      const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
+      return <AdminDashboard onMenuClick={toggleSidebar} />;
     },
-})
+  })
 
 // Additional dashboard routes (for future use)
 const usersRoute = createRoute({
@@ -327,10 +324,12 @@ export function AppRouter() {
     }
 
     return (
-        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <>
+            <ThemeSync />
+            <GlobalSpinner />
             <RouterProvider router={router} context={{ authentication: { isAuthenticated, userRole, } }} />
             <ToastAlerts />
             {/* {import.meta.env.DEV ? <TanStackRouterDevtools router={router} /> : null} */}
-        </ThemeProvider>
-    )
+        </>
+    );
 }

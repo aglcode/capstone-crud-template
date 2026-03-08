@@ -9,19 +9,22 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Moon, Sun, Search, Bell } from 'lucide-react';
-import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useThemeStore } from '@/stores/theme.store';
+import { useSidebarStore } from '@/stores/sidebar.store';
+import { Menu } from 'lucide-react';
 
 interface DashboardHeaderProps {
     className?: string;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ className }) => {
-    const { setTheme, theme } = useTheme();
+    const { setTheme, theme } = useThemeStore();
     const location = useLocation();
     const pathSegments = location.pathname.split('/').filter(Boolean);
+    const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
 
     const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -46,8 +49,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ className }) => {
         <header className={cn("sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
             <div className="flex h-16 items-center px-6 gap-4">
 
-                {/* Breadcrumbs */}
+                {/* Breadcrumbs on Mobile*/}
                 <div className="mr-auto flex items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="md:hidden"
+                      onClick={toggleSidebar}
+                      aria-label="Toggle sidebar"
+                      >
+                    <Menu className="h-5 w-5" />
+                    </Button>
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>

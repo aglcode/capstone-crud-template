@@ -37,6 +37,7 @@ import { type Product } from "../../../types/types";
 import { cn } from "../../../lib/utils";
 import { motion, type Variants } from "framer-motion";
 import { AddProductModal } from "./adminmodals/AddProductModal";
+import { useModalStore } from "@/stores/modal.store";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -92,8 +93,10 @@ const Products = ({ products }: ProductTableProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [isAddProductModalOpen, setIsAddProductModalOpen] = React.useState(false);
-
+  
+  const openModal = useModalStore((s) => s.openModal);
+  const isAddProductModalOpen = useModalStore((s) => s.openModalId === "addProduct");
+  const closeModal = useModalStore((s) => s.closeModal);
 
 
 
@@ -129,7 +132,7 @@ const Products = ({ products }: ProductTableProps) => {
         header: ({ column }) => (
           <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1 cursor-pointer hover:text-foreground"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => openModal("addProduct")}
           >
             Product
             <ArrowUpDown className="h-3 w-3" />
@@ -166,7 +169,7 @@ const Products = ({ products }: ProductTableProps) => {
         header: ({ column }) => (
           <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center justify-end gap-1 cursor-pointer hover:text-foreground"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => openModal("addProduct")}
           >
             Price
             <ArrowUpDown className="h-3 w-3" />
@@ -186,7 +189,7 @@ const Products = ({ products }: ProductTableProps) => {
         header: ({ column }) => (
           <div
             className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center justify-end gap-1 cursor-pointer hover:text-foreground"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => openModal("addProduct")}
           >
             Stock
             <ArrowUpDown className="h-3 w-3" />
@@ -288,7 +291,7 @@ const Products = ({ products }: ProductTableProps) => {
                 <Filter className="mr-2 h-4 w-4" />
                 Columns
               </Button>
-              <Button size="sm" className="h-9" onClick={() => setIsAddProductModalOpen(true)}>
+              <Button size="sm" className="h-9" onClick={() => openModal('addProduct')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Product
               </Button>
@@ -370,7 +373,7 @@ const Products = ({ products }: ProductTableProps) => {
           </motion.div>
         </motion.div>
       </div>
-      <AddProductModal isOpen={isAddProductModalOpen} onClose={() => setIsAddProductModalOpen(false)} />
+      <AddProductModal isOpen={isAddProductModalOpen} onClose={closeModal} />
     </div>
   )
 }

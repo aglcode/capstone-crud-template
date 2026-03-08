@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import {
   Table,
   TableBody,
@@ -13,19 +14,19 @@ import { Badge } from "../../../components/ui/badge";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
 import { Plus, Filter, Eye, Pencil, Trash2 } from "lucide-react";
-import { type User, type UserStatus } from '../../../types/types';
+import { type User, type UserStatus } from "../../../types/types";
 import { motion, type Variants } from "framer-motion";
 import { Pagination } from "../../../components/layout/Pagination";
 import { AddUserModal } from "./adminmodals/AddUserModal";
+import { useModalStore } from "@/stores/modal.store";
+import { useLoadingStore } from "@/stores/loading.store";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const itemVariants: Variants = {
@@ -33,67 +34,16 @@ const itemVariants: Variants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100
-    }
-  }
+    transition: { type: "spring", stiffness: 100 },
+  },
 };
-
-const INITIAL_USERS: User[] = [
-  {
-    id: '1',
-    name: 'Sarah Miller',
-    email: 'sarah.miller@acme.com',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    role: 'Super Admin',
-    status: 'Active',
-    lastActive: 'Oct 24, 2023',
-  },
-  {
-    id: '2',
-    name: 'James Chen',
-    email: 'james.c@acme.com',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    role: 'Admin',
-    status: 'Active',
-    lastActive: 'Oct 23, 2023',
-  },
-  {
-    id: '3',
-    name: 'Maria Kostas',
-    email: 'm.kostas@acme.com',
-    initials: 'MK',
-    role: 'Customer',
-    status: 'Offline',
-    lastActive: 'Sep 12, 2023',
-  },
-  {
-    id: '4',
-    name: 'David Kim',
-    email: 'd.kim@acme.com',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    role: 'Customer',
-    status: 'Suspended',
-    lastActive: 'Aug 01, 2023',
-  },
-  {
-    id: '5',
-    name: 'Robert Brown',
-    email: 'robert.b@acme.com',
-    initials: 'RB',
-    role: 'Customer',
-    status: 'Pending',
-    lastActive: '--',
-  },
-];
 
 const StatusBadge = ({ status }: { status: UserStatus }) => {
   const variants: Record<UserStatus, "success" | "secondary" | "destructive" | "warning"> = {
-    Active: 'success',
-    Offline: 'secondary',
-    Suspended: 'destructive',
-    Pending: 'warning',
+    Active: "success",
+    Offline: "secondary",
+    Suspended: "destructive",
+    Pending: "warning",
   };
 
   return (
@@ -104,35 +54,78 @@ const StatusBadge = ({ status }: { status: UserStatus }) => {
 };
 
 export default function UsersPage() {
-  const [users] = useState<User[]>(INITIAL_USERS);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>(['1']);
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [error, setError] = useState<string | null>(null);
 
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const openModal = useModalStore((s) => s.openModal);
+  const isAddUserModalOpen = useModalStore((s) => s.openModalId === "addUser");
+  const closeModal = useModalStore((s) => s.closeModal);
+
+  useEffect(() => {
+    const { showSpinner, hideSpinner } = useLoadingStore.getState();
+    const fetchUsers = async () => {
+      showSpinner();
+      setError(null);
+
+      try {
+        const { data, error } = await supabase.from("users").select("*");
+
+        if (error) {
+          setError(error.message);
+          return;
+        }
+
+        const mappedUsers = (data ?? []).map(
+          (row: any): User => ({
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            avatar: undefined,
+            initials: row.name?.[0] ?? undefined,
+            role: "Customer",
+            status: "Active" as UserStatus,
+            lastActive: "--",
+          })
+        );
+
+        setUsers(mappedUsers);
+      } finally {
+        hideSpinner();
+      }
+    };
+
+    void fetchUsers();
+  }, []);
+
+  const totalPages = Math.max(1, Math.ceil(users.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentUsers = users.slice(startIndex, endIndex);
 
-
   const toggleSelection = (userId: string) => {
-    setSelectedUsers(prev =>
-      prev.includes(userId)
-        ? prev.filter(id => id !== userId)
-        : [...prev, userId]
+    setSelectedUsers((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
     );
   };
 
   const toggleAll = () => {
-    if (selectedUsers.length === users.length) {
+    if (selectedUsers.length === currentUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(currentUsers.map(u => u.id));
+      setSelectedUsers(currentUsers.map((u) => u.id));
     }
   };
 
-
+  if (error) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <span className="text-sm text-destructive">Failed to load users: {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full bg-background transition-colors duration-300">
@@ -145,7 +138,6 @@ export default function UsersPage() {
               Manage your team members and their account permissions.
             </p>
           </div>
-
         </div>
       </header>
 
@@ -157,9 +149,11 @@ export default function UsersPage() {
           initial="hidden"
           animate="visible"
         >
-
           {/* Toolbar */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+          >
             <div className="w-full sm:max-w-sm">
               <Input placeholder="Filter emails..." className="h-9" />
             </div>
@@ -168,7 +162,7 @@ export default function UsersPage() {
                 <Filter className="mr-2 h-4 w-4" />
                 Columns
               </Button>
-              <Button size="sm" className="h-9" onClick={() => setIsAddUserModalOpen(true)}>
+              <Button size="sm" className="h-9" onClick={() => openModal("addUser")}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add User
               </Button>
@@ -195,7 +189,10 @@ export default function UsersPage() {
               </TableHeader>
               <TableBody>
                 {currentUsers.map((user) => (
-                  <TableRow key={user.id} data-state={selectedUsers.includes(user.id) ? "selected" : undefined}>
+                  <TableRow
+                    key={user.id}
+                    data-state={selectedUsers.includes(user.id) ? "selected" : undefined}
+                  >
                     <TableCell>
                       <Checkbox
                         checked={selectedUsers.includes(user.id)}
@@ -205,14 +202,16 @@ export default function UsersPage() {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9 border border-border">
-                          <AvatarImage src={user.avatar} alt={user.name} />
-                          <AvatarFallback className={user.initials === 'MK' ? 'bg-gradient-to-br from-purple-500 to-indigo-600 text-white font-bold' : undefined}>
+                          <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                          <AvatarFallback>
                             {user.initials || user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium leading-none">{user.name}</span>
-                          <span className="text-xs text-muted-foreground mt-1 font-normal">{user.email}</span>
+                          <span className="text-xs text-muted-foreground mt-1 font-normal">
+                            {user.email}
+                          </span>
                         </div>
                       </div>
                     </TableCell>
@@ -228,16 +227,31 @@ export default function UsersPage() {
                       {user.lastActive}
                     </TableCell>
                     <TableCell className="text-right">
-                      <motion.div variants={itemVariants} className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-green-600 dark:hover:text-green-400">
+                      <motion.div
+                        variants={itemVariants}
+                        className="flex items-center justify-end gap-1"
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-green-600 dark:hover:text-green-400"
+                        >
                           <Eye className="h-4 w-4" />
                           <span className="sr-only">View</span>
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
+                        >
                           <Pencil className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
                         </Button>
@@ -257,8 +271,8 @@ export default function UsersPage() {
               selectedCount={selectedUsers.length}
               totalCount={users.length}
               onPageChange={setCurrentPage}
-              onPrevious={() => setCurrentPage(p => Math.max(1, p - 1))}
-              onNext={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               onFirst={() => setCurrentPage(1)}
               onLast={() => setCurrentPage(totalPages)}
               canPrevious={currentPage > 1}
@@ -267,7 +281,8 @@ export default function UsersPage() {
           </motion.div>
         </motion.div>
       </div>
-      <AddUserModal isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} />
+
+      <AddUserModal isOpen={isAddUserModalOpen} onClose={closeModal} />
     </div>
   );
 }
