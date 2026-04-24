@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { supabase } from '@/lib/supabase';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-
-
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {

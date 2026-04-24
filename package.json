@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@heroui/react": "^2.8.8",
-    "@heroui/theme": "^2.4.26",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",
@@ -26,7 +24,6 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@supabase/supabase-js": "^2.90.1",
-    "@tanstack/react-query": "^5.90.18",
     "@tanstack/react-router": "^1.153.2",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
@@ -40,7 +37,6 @@
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.1",
     "recharts": "^3.7.0",
-    "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^4.3.5",
