@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { supabase } from "@/lib/supabase"
+import { useToast } from "@/hooks/use-toast"
 import { Modal } from "@/components/ui/modals/Modal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,25 +12,61 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { type UserRole } from "@/types/types"
 
 interface AddUserModalProps {
     isOpen: boolean
     onClose: () => void
+    onSuccess?: () => void
 }
 
-export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
+export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess }) => {
+    const { toast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [role, setRole] = useState<UserRole>("Customer")
 
     const onSubmit = async () => {
+        if (!name || !email) {
+            toast({
+                title: "Validation Error",
+                description: "Name and Email are required.",
+                variant: "destructive"
+            })
+            return
+        }
+
         try {
             setIsLoading(true)
-            // TODO: Add API call
-            setTimeout(() => {
-                setIsLoading(false)
-                onClose()
-            }, 1000)
-        } catch (error) {
+            
+            const { error } = await supabase
+                .from("users")
+                .insert([
+                    { name, email, role }
+                ])
+
+            if (error) throw error
+
+            toast({
+                title: "Success",
+                description: "User has been added successfully.",
+            })
+
+            // Reset form
+            setName("")
+            setEmail("")
+            setRole("Customer")
+            
+            onSuccess?.()
+            onClose()
+        } catch (error: any) {
             console.error(error)
+            toast({
+                title: "Error",
+                description: error.message || "Failed to add user.",
+                variant: "destructive"
+            })
         } finally {
             setIsLoading(false)
         }
@@ -44,22 +82,39 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) =
             <div className="space-y-4 py-2 pb-4">
                 <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="John Doe" />
+                    <Input 
+                        id="name" 
+                        placeholder="John Doe" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        disabled={isLoading}
+                    />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" placeholder="john@example.com" type="email" />
+                    <Input 
+                        id="email" 
+                        placeholder="john@example.com" 
+                        type="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
+                    />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
-                    <Select defaultValue="customer">
+                    <Select 
+                        value={role} 
+                        onValueChange={(value) => setRole(value as UserRole)}
+                        disabled={isLoading}
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="super_admin">Super Admin</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="customer">Customer</SelectItem>
+                            <SelectItem value="Super Admin">Super Admin</SelectItem>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="Customer">Customer</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -68,7 +123,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) =
                         Cancel
                     </Button>
                     <Button disabled={isLoading} onClick={onSubmit}>
-                        Continue
+                        {isLoading ? "Adding..." : "Continue"}
                     </Button>
                 </div>
             </div>

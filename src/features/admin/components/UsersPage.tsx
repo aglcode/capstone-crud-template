@@ -14,7 +14,7 @@ import { Badge } from "../../../components/ui/badge";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
 import { Plus, Filter, Eye, Pencil, Trash2 } from "lucide-react";
-import { type User, type UserStatus } from "../../../types/types";
+import { type User, type UserStatus, type UserRole } from "../../../types/types";
 import { motion, type Variants } from "framer-motion";
 import { Pagination } from "../../../components/layout/Pagination";
 import { AddUserModal } from "./adminmodals/AddUserModal";
@@ -64,39 +64,39 @@ export default function UsersPage() {
   const isAddUserModalOpen = useModalStore((s) => s.openModalId === "addUser");
   const closeModal = useModalStore((s) => s.closeModal);
 
-  useEffect(() => {
+  const fetchUsers = async () => {
     const { showSpinner, hideSpinner } = useLoadingStore.getState();
-    const fetchUsers = async () => {
-      showSpinner();
-      setError(null);
+    showSpinner();
+    setError(null);
 
-      try {
-        const { data, error } = await supabase.from("users").select("*");
+    try {
+      const { data, error } = await supabase.from("users").select("*");
 
-        if (error) {
-          setError(error.message);
-          return;
-        }
-
-        const mappedUsers = (data ?? []).map(
-          (row: any): User => ({
-            id: row.id,
-            name: row.name,
-            email: row.email,
-            avatar: undefined,
-            initials: row.name?.[0] ?? undefined,
-            role: "Customer",
-            status: "Active" as UserStatus,
-            lastActive: "--",
-          })
-        );
-
-        setUsers(mappedUsers);
-      } finally {
-        hideSpinner();
+      if (error) {
+        setError(error.message);
+        return;
       }
-    };
 
+      const mappedUsers = (data ?? []).map(
+        (row: any): User => ({
+          id: row.id,
+          name: row.name,
+          email: row.email,
+          avatar: undefined,
+          initials: row.name?.[0] ?? undefined,
+          role: (row.role as UserRole) || "Customer",
+          status: "Active" as UserStatus,
+          lastActive: "--",
+        })
+      );
+
+      setUsers(mappedUsers);
+    } finally {
+      hideSpinner();
+    }
+  };
+
+  useEffect(() => {
     void fetchUsers();
   }, []);
 
@@ -149,7 +149,6 @@ export default function UsersPage() {
           initial="hidden"
           animate="visible"
         >
-          {/* Toolbar */}
           <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
@@ -169,7 +168,6 @@ export default function UsersPage() {
             </div>
           </motion.div>
 
-          {/* Table */}
           <motion.div variants={itemVariants} className="rounded-md border border-border bg-card">
             <Table>
               <TableHeader>
@@ -263,7 +261,6 @@ export default function UsersPage() {
             </Table>
           </motion.div>
 
-          {/* Footer / Pagination */}
           <motion.div variants={itemVariants}>
             <Pagination
               currentPage={currentPage}
@@ -282,7 +279,7 @@ export default function UsersPage() {
         </motion.div>
       </div>
 
-      <AddUserModal isOpen={isAddUserModalOpen} onClose={closeModal} />
+      <AddUserModal isOpen={isAddUserModalOpen} onClose={closeModal} onSuccess={fetchUsers} />
     </div>
   );
 }
