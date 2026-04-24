@@ -21,6 +21,13 @@ import { AddUserModal } from "./adminmodals/AddUserModal";
 import { useModalStore } from "@/stores/modal.store";
 import { useLoadingStore } from "@/stores/loading.store";
 
+interface UserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -78,7 +85,7 @@ export default function UsersPage() {
       }
 
       const mappedUsers = (data ?? []).map(
-        (row: any): User => ({
+        (row: UserRow): User => ({
           id: row.id,
           name: row.name,
           email: row.email,

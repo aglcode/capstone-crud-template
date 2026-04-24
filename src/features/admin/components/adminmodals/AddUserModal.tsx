@@ -60,11 +60,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onS
             
             onSuccess?.()
             onClose()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error)
             toast({
                 title: "Error",
-                description: error.message || "Failed to add user.",
+                description: error instanceof Error ? error.message : "Failed to add user.",
                 variant: "destructive"
             })
         } finally {
