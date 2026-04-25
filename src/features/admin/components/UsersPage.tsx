@@ -60,6 +60,14 @@ const StatusBadge = ({ status }: { status: UserStatus }) => {
   );
 };
 
+/**
+ * Render the Users management page with a selectable, paginated users table and controls to add/filter users.
+ *
+ * The component fetches user records on mount, shows a centered error message if loading fails, allows selecting
+ * individual or all visible users, and opens an "Add User" modal that refreshes the list on successful creation.
+ *
+ * @returns The UI for the users page including header, toolbar, users table with actions, pagination, and the Add User modal.
+ */
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
